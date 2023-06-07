@@ -9,11 +9,14 @@ libxslt
 glib2
 libgpg-error
 libgcrypt
+cryptsetup
 iptables
 libunistring
 libidn
 openssl
 p11-kit
+json-c
+lvm2
 systemd
 elfutils
 dbus
@@ -94,7 +97,6 @@ libaio
 lzo
 squashfs-tools
 rpm2targz
-lvm2
 sword-helper
 fuse
 unionfs-fuse

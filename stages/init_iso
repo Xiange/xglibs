@@ -82,13 +82,36 @@ mount -t proc -o nodev,noexec,nosuid proc /proc
 err_check "mount proc failed."
 mount -t devtmpfs none /dev
 err_check "mount dev failed."
+mount -t tmpfs run /run -o nosuid,nodev,mode=0755
+err_check "mount run failed."
 
+showinfo "creating tmpfiles..."
+systemd-tmpfiles --prefix=/dev --create --boot
+err_check "run systemd-tmpfiles failed"
+
+mkdir -p /run/udev
+err_check "create /run/udev failed"
+
+showinfo "detecting hardware..."
+/lib/systemd/systemd-udevd --daemon --resolve-names=never
+err_check "start udevd failed"
+showinfo "triggering uevents..."
+udevadm trigger --action=add --type=subsystems
+err_check "add device for subsystem failed"
+udevadm trigger --action=add --type=devices
+err_check "add device failed"
+udevadm settle
+err_check "udevadm settle failed"
 
 #cdrom
 modprobe cdrom
 err_check "load cdrom failed."
 modprobe sr_mod
 err_check "load sr_mod failed."
+modprobe iso9660
+err_check "load iso9660 failed."
+modprobe vfat
+err_check "load vfat failed."
 
 #check safemode
 safemode=$(cat /proc/cmdline | grep "safemode")
@@ -119,6 +142,7 @@ if [ "x$rootdev" == "x" ]; then
 	echo "!"
 	echo ""
 	showFailed "$rootid is not found, enter failsafe mode."
+	blkid
 	/bin/sh
 fi
 
@@ -126,7 +150,9 @@ xgb_arch=$(uname -m)
 get_squash_arch
 
 ddmntp=/tmp
-finalmnt=/tmp/root
+finalmnt=/tmp/xiange/root
+finalupper=/tmp/xiange/upper
+finalwork=/tmp/xiange/work
 srcfile=$ddmntp/xiange/xiange-sqroot-$xgb_arch
 cowfile=$ddmntp/xiange/cow-${xgb_arch}.out
 
@@ -153,15 +179,39 @@ mount "$srcfile" /mnt
 err_check "mount $1 to /mnt failed."
 
 #mount tmpfs
-mount -t tmpfs none /tmp -o size=1G,mode=1777
-err_check "mount /tmp failed."
 
-mkdir -p /tmp/upper
-mkdir -p /tmp/work
-mkdir -p /tmp/root
 
-mount -t overlay -o lowerdir=/mnt,upperdir=/tmp/upper,workdir=/tmp/work overlay $finalmnt
+if [ -f $cowfile ]; then
+	#use cow fie
+	mount $cowfile /tmp
+	err_check "mount $cowfile failed."
+	mkdir -p $finalupper 
+	mkdir -p $finalwork
+	mkdir -p $finalmnt
+	err_check "mkdir $finalmnt failed."
+else
+	#direct ? 
+	mkdir -p $finalupper 2>/dev/null
+	if [ "$?" != "0" ]; then
+		#readonly system, use tmp
+		showinfo "cow: use tmpfs"
+		mount -t tmpfs none /tmp -o size=1G,mode=1777
+		err_check "mount /tmp failed."
+		mkdir -p $finalupper 
+	else
+		showinfo "cow: direct mode"
+	fi
+
+	mkdir -p $finalwork
+	mkdir -p $finalmnt
+fi
+
+
+mount -t overlay -o lowerdir=/mnt,upperdir=$finalupper,workdir=$finalwork overlay $finalmnt
 err_check "mount overlayfs failed"
+
+udevadm control --exit
+udevadm info --cleanup-db
 
 showinfo "all done, booting..."
 mount -t devtmpfs none $finalmnt/dev

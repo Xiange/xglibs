@@ -45,7 +45,7 @@ xgb_config()
 	cd aalib-1.4.0
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --disable-static --with-x11-driver=no --without-x --with-ncurses=/usr "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

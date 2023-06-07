@@ -137,10 +137,10 @@ xgb_install()
 		err_check "zic failed."
 	done
 
-	cp -v zone.tab iso3166.tab $ZONEINFO
+	cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO
 	err_check "cp zone tab failed."
 
-	cp -v --remove-destination $XGPATH_DEST/usr/share/zoneinfo/Asia/Shanghai \
+	ln -sfv /usr/share/zoneinfo/Asia/Shanghai \
 		$XGPATH_DEST/etc/localtime
 	err_check "glibc: config time zone failed."
 	popd

@@ -1,4 +1,82 @@
 
+how to update xiange system:
+
+
+1. check compiled packages of current version:
+
+	gpkg ckstage 0 /var/xiange/packages
+	gpkg ckstage 1 /var/xiange/packages
+
+	make sure all packages in stage0/stage1 was compiled.
+
+	check and install stage1 because some stage1 packages is needed when compile stage0 stages.
+
+
+2. prepare a root directory, such as /root/xiange-2022.2
+
+	export XGROOT=/root/2022.2
+
+3. create and mount xiange libs to new root directory: 
+
+	mkdir -p $XGROOT/var/xiange/xglibs
+	mount --bind /var/xiange/xglibs $XGROOT/var/xiange/xglibs
+
+
+	mkdir -p $XGROOT/var/xiange/sources
+	mkdir /mnt/bak/sources-2022.2
+	mount --bind /var/xiange/sources $XGROOT/var/xiange/sources
+
+	copy baselayout to new source directory:
+
+	cp -l -r /mnt/bak/sources-2020/baselayout-2020.11 /mnt/bak/sources-2022.2
+
+	-l means hard link.
+
+
+4. install stage0 of current version to root directory:
+
+	gpkg inststage 0 /var/xiange/packages
+	gpkg inststage 1 /var/xiange/packages
+
+5. chroot to new root
+	
+	gpkg chroot $XGROOT
+
+	. /etc/profile
+
+6. create user gpkg and group gpkg
+
+	groupadd -g 35 gpkg
+	useradd -g 35 -u 35 gpkg
+
+	and then check su:
+
+	su -p gpkg -c "whoami"
+
+7. change compile parameters:
+
+
+	REMOVE native if you want build a common release:
+
+	gpkg -info > /etc/xgparas
+	vi $XGROOT//etc/xgparas
+	gpkg -info
+
+
+
+8. update glibc (linux-header first if needed)
+
+	download source outside chroot environment: gpkg -d glibc
+
+	gpkg -ip glibc
+
+9. update bin-utils/gcc
+
+	use cp -l -r to hard link copy exists source files. 
+
+9. update stage 0 one by one with newest version:
+
+
 how to install xiange:
 
 
@@ -88,7 +166,6 @@ How to update Xiange Image
 
 	gpkg -info > $XGROOT//etc/xgparas
 	vi $XGROOT//etc/xgparas
-
 	gpkg -info
 
 

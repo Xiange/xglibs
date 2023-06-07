@@ -67,6 +67,9 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install $N failed."
 
+	#remove static lib
+	rm -fv $XGPATH_DEST/usr/lib/libz.a
+
 	#for FHS compliant
 	mkdir -p $XGPATH_DEST/lib
 	mv -v $XGPATH_DEST/usr/lib/libz.so.* $XGPATH_DEST/lib

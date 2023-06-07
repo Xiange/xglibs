@@ -56,7 +56,7 @@ xgb_config()
 	cd        build 
 	err_check "cd build failed."
 
-	XGB_CONFIG+=" -DCMAKE_BUILD_TYPE=Release  \
+	XGB_CONFIG=" -DCMAKE_BUILD_TYPE=Release  \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_SKIP_RPATH=ON       \
 		-DPORT=GTK                  \

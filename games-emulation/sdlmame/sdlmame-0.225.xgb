@@ -424,6 +424,5 @@ EOF
 xgb_postinst()
 {
 	echo "running after package installed..."
-	modprobe snd_seq
 }
 

@@ -6,7 +6,7 @@
 DESCRIPTION="File transfer program to keep remote files into sync"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://rsync.samba.org/"
+HOMEPAGE="https://rsync.samba.org"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -52,7 +52,10 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --without-included-zlib --disable-xxhash "
+	XGB_CONFIG+=" --without-included-zlib --disable-xxhash --disable-openssl "
+
+	#enabled only when building androwish
+	#XGB_CONFIG+=" --disable-openssl "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

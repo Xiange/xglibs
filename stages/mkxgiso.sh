@@ -85,12 +85,18 @@ cp -r $mntdir/boot $isodir
 err_check "copy boot failed" 
 
 #patch boot grub
-sed -i 's@search.*--no-floppy.*@set root=(cd,3)@g' $isodir/boot/grub/grub.cfg 
+sed -i 's@search.*--no-floppy.*@search --label --set root ISOIMAGE@g' $isodir/boot/grub/grub.cfg 
+err_check "patch grub.cfg failed"
+sed -i 's@root=UUID=[^ ]*@root=TYPE=iso9660@g' $isodir/boot/grub/grub.cfg 
 err_check "patch grub.cfg failed"
 
+
+
 #copy squshfs
+showinfo "coping image files..."
 mkdir -p $isodir/xiange
-touch $isodir/xiange/test
+cp $mntdir/xiange/xiange-sqroot* $isodir/xiange
+showinfo "copy ok"
 
 #umount
 umount $mntdir
@@ -102,6 +108,9 @@ err_check "remove $sqimg failed"
 showinfo "making iso $isofile..."
 grub-mkrescueefi -o $isofile --product-name="Xiange-Linux" --product-version="2020.10.29" $isodir
 err_check "mkiso failed"
+
+#remove iso dir
+rm -rf $isodir
 
 showinfo "$isofile done"
 

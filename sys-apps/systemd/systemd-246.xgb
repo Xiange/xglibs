@@ -14,8 +14,7 @@ HOMEPAGE="http://freedesktop.org/wiki/Software/systemd"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/systemd/systemd/archive/v$V/systemd-$V.tar.gz \
-	http://www.linuxfromscratch.org/patches/blfs/svn/systemd-245-gcc_10-fixes-2.patch"
+SRC_URI="https://github.com/systemd/systemd/archive/v$V/systemd-$V.tar.gz"
 
 
 # Binary package URI.
@@ -53,7 +52,7 @@ xgb_config()
 	cd $N-$V$R
 	err_check "enter directory failed."
 
-	patch -Np1 -i $XGPATH_SOURCE/systemd-245-gcc_10-fixes-2.patch
+	#patch -Np1 -i $XGPATH_SOURCE/systemd-245-gcc_10-fixes-2.patch
 
 
 
@@ -74,6 +73,8 @@ xgb_config()
 	  -Dbuildtype=release          \
       -Ddefault-dnssec=no          \
       -Dfirstboot=false            \
+      -Dstatic-libsystemd=false            \
+      -Dstatic-libudev=false            \
       -Dinstall-tests=false        \
       -Dkill-path=/bin/kill        \
       -Dkmod-path=/bin/kmod        \
@@ -86,14 +87,16 @@ xgb_config()
       -Dsulogin-path=/sbin/sulogin \
       -Dsysusers=false             \
 	  -Duserdb=false			   \
+	  -Dlibcryptsetup=false			   \
       -Dumount-path=/bin/umount    \
 	  -Dhomed=false  			   \
 	  -Drpmmacrosdir=no			   \
       -Db_lto=false "
 
+	#XGB_CONFIG+=-Dntp-servers="0.asia.pool.ntp.org 0.oceania.pool.ntp.org 0.europe.pool.ntp.org 0.north-america.pool.ntp.org" 
 
 	#Third, call configure with $XGB_CONFIG
-	LANG=en_US.UTF-8 meson $XGB_CONFIG ..
+	LANG=en_US.UTF-8 meson $XGB_CONFIG -Dntp-servers="0.asia.pool.ntp.org 0.oceania.pool.ntp.org 0.europe.pool.ntp.org 0.north-america.pool.ntp.org" .. 
 	err_check "config failed."
 }
 

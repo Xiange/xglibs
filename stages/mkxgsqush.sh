@@ -28,11 +28,9 @@ xg_cleanup()
 	showinfo "unmounting $oldroot..."
 	umount $oldroot
 
+
 	losetup -d /dev/loop1
 	losetup -d /dev/loop2
-
-
-	rm -rf $mntroot
 }
 
 
@@ -158,15 +156,6 @@ xg_do_kernel()
 	gunzip -c ${initnames[0]} | cpio -i 
 	err_check "unzip initramfs ${initnames[0]} failed."
 
-	#get amd-ucode
-	bsdtar xf $oldroot/boot/amd-ucode.img
-	err_check "copy amd-ucode failed"
-
-	#get intel-ucode
-	bsdtar xf $oldroot/boot/intel-ucode.img
-	err_check "copy intel-ucode failed"
-
-
 	kver="$1"
 
 	XGLIST="$oldroot/lib/libdevmapper.so.*
@@ -178,24 +167,77 @@ xg_do_kernel()
 		$oldroot/lib/libpthread-*.so 
 		$oldroot/lib/ld-*.so 
 		$oldroot/lib/ld-linux-x86-64.so.* 
+		$oldroot/lib/systemd/systemd-udevd
+		$oldroot/lib/systemd/libsystemd-shared-*.so
+		$oldroot/lib/libkmod.so*
+		$oldroot/usr/lib/libacl.so*
+		$oldroot/lib/libblkid.so*
+		$oldroot/lib/libcap.so*
+		$oldroot/usr/lib/libgcrypt.so*
+		$oldroot/usr/lib/libidn2.so*
+		$oldroot/usr/lib/libip4tc.so*
+		$oldroot/usr/lib/liblz4.so*
+		$oldroot/usr/lib/libmount.so*
+		$oldroot/lib/libmount.so*
+		$oldroot/usr/lib/libcrypto.so*
+		$oldroot/usr/lib/libp11-kit.so*
+		$oldroot/usr/lib/libpam.so*
+		$oldroot/lib/librt.so*
+		$oldroot/lib/librt-*.so
+		$oldroot/usr/lib/libzstd.so*
+		$oldroot/usr/lib/liblzma.so*
+		$oldroot/usr/lib/libz.so*
+		$oldroot/lib/libz.so*
+		$oldroot/lib/libdl*so*
+		$oldroot/usr/lib/libattr.so*
+		$oldroot/usr/lib/libattr.so*
+		$oldroot/usr/lib/libgpg-error.so*
+		$oldroot/usr/lib/libunistring.so*
+		$oldroot/usr/lib/libffi.so*
+		$oldroot/lib/udev/ata_id
+		$oldroot/lib/udev/cdrom_id
+		$oldroot/lib/udev/scsi_id
+		$oldroot/lib/udev/rules.d/*
 		$oldroot/sbin/dmsetup
-		$oldroot/lib/modules/$kver/kernel/drivers/block/loop.ko
-		$oldroot/lib/modules/$kver/kernel/fs/squashfs/squashfs.ko
-		$oldroot/lib/modules/$kver/kernel/fs/overlayfs/overlay.ko
-		$oldroot/lib/modules/$kver/kernel/lib/lz4/lz4*.ko
-		$oldroot/lib/modules/$kver/kernel/drivers/cdrom/*.ko
-		$oldroot/lib/modules/$kver/kernel/drivers/scsi/sr_mod.ko
-		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-snapshot.ko
-		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-bufio.ko
-		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-mod.ko"
-		
+		$oldroot/lib/modules/$kver/modules*
+		$oldroot/lib/modules/$kver/kernel/crypto/lz4*
+		$oldroot/lib/modules/$kver/kernel/drivers/ata
+		$oldroot/lib/modules/$kver/kernel/drivers/block
+		$oldroot/lib/modules/$kver/kernel/drivers/cdrom
+		$oldroot/lib/modules/$kver/kernel/drivers/dma
+		$oldroot/lib/modules/$kver/kernel/drivers/hid
+		$oldroot/lib/modules/$kver/kernel/drivers/input/evdev.ko*
+		$oldroot/lib/modules/$kver/kernel/drivers/input/keyboard
+		$oldroot/lib/modules/$kver/kernel/drivers/input/serio
+		$oldroot/lib/modules/$kver/kernel/drivers/mtd
+		$oldroot/lib/modules/$kver/kernel/drivers/pci
+		$oldroot/lib/modules/$kver/kernel/drivers/scsi
+		$oldroot/lib/modules/$kver/kernel/drivers/thunderbolt
+		$oldroot/lib/modules/$kver/kernel/drivers/usb
+		$oldroot/lib/modules/$kver/kernel/drivers/virt
+		$oldroot/lib/modules/$kver/kernel/drivers/virtio
+		$oldroot/lib/modules/$kver/kernel/drivers/hv
+		$oldroot/lib/modules/$kver/kernel/fs/squashfs
+		$oldroot/lib/modules/$kver/kernel/fs/exfat
+		$oldroot/lib/modules/$kver/kernel/fs/fat
+		$oldroot/lib/modules/$kver/kernel/fs/overlayfs
+		$oldroot/lib/modules/$kver/kernel/fs/isofs
+		$oldroot/lib/modules/$kver/kernel/fs/nls/nls_cp437.*
+		$oldroot/lib/modules/$kver/kernel/fs/nls/nls_utf8*
+		$oldroot/lib/modules/$kver/kernel/lib/lz4
+		$oldroot/bin/systemd-tmpfiles
+		$oldroot/bin/udevadm"
+	
 	if [ "$XGB_ARCH" == "x86_64" ]; then
 		ln -sv lib $mntroot/init/lib64
 		err_check "create lib64 failed."
 	fi
 
-	mkdir -p $mntroot/init/root
-	err_check "create root failed."
+	mkdir -p $mntroot/init/{root,run,var}
+	err_check "create root|run|var failed."
+
+	ln -sv /run $mntroot/init/var/run 
+
 
 	#copy file in list
 	for i in $XGLIST;
@@ -207,6 +249,10 @@ xg_do_kernel()
 		cp -a $i $mntroot/init$basen/
 		err_check "cp $oldroot$i failed."
 	done
+
+	#/usr/lib64
+	ln -sv lib $mntroot/init/usr/lib64
+	err_check "create /usr/lib64 failed"
 
 	
 	#init
@@ -228,6 +274,12 @@ xg_do_kernel()
 	chroot $mntroot/init /sbin/dmsetup --help 
 	err_check "run dmsetup failed."
 
+	chroot $mntroot/init /bin/udevadm --help 
+	err_check "run udevadm failed."
+
+	chroot $mntroot/init /bin/systemd-tmpfiles --help 
+	err_check "run tmpfiles failed."
+
 	#sleep 1
 	umount $mntroot/init/dev
 	err_check "umount dev failed."
@@ -246,7 +298,10 @@ xg_do_kernel()
 
 	showinfo "$newroot/boot/initramfs-$1.img.gz is ready."
 
-	initrdf=${initrdf}.gz
+	cp $oldroot/boot/{amd-ucode.img,intel-ucode.img} $newroot/boot/
+	err_check "copy ucode failed"
+
+	initrdf="/boot/intel-ucode.img /boot/amd-ucode.img ${initrdf}.gz"
 
 	#boot.cfg
 	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
@@ -464,8 +519,11 @@ xg_useoldimg()
 	mount ${loopd}p3 $mntroot/1
 	err_check "mount ${loopd}p3 failed."
 
-	#remove cowfiles
-	rm $mntroot/1/xiange/cow-*
+	#remove old files
+	rm $mntroot/1/xiange/*
+	rm $mntroot/1/boot/vmlinuz-*
+	rm $mntroot/1/boot/config-*
+	rm $mntroot/1/boot/initramfs*
 	
 	showinfo "unmount $mntroot/1..."
 	umount $mntroot/1
@@ -561,8 +619,20 @@ else
 fi
 
 showinfo "creating cow image size $size MB.."
-dd if=/dev/zero of=$newroot/xiange/cow-${squash_arch}.out count=$((2*1024*$size))
+cowfile=$newroot/xiange/cow-${squash_arch}.out
+dd if=/dev/zero of=$cowfile count=$((2*1024*$size))
 err_check "create $newroot/cow.out failed."
+
+showinfo "formating cow image..."
+lpcow=$(losetup -f --show -P $cowfile)
+err_check "setup $cowfile failed"
+
+mkfs.ext4 ${lpcow}
+err_check "format $lpcow failed"
+
+losetup -d $lpcow
+err_check "release $lpcow failed"
+
 
 #unmount newroot
 showinfo "unmounting $newroot..."
@@ -574,8 +644,6 @@ umount $oldroot
 err_check "unmount $oldroot failed."
 
 losetup -d ${loopd}
-err_check "remove /dev/loop2 failed."
-
 
 rm -rf $mntroot
 

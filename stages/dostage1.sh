@@ -101,6 +101,16 @@ done
 #sed -i "s@root=UUID=[^ \t]*@root=UUID=$newid@g" /boot/grub/grub.cfg
 #err_check "change UUID to $newid failed."
 
+#config systemd
+systemd-machine-id-setup
+systemctl preset-all
+systemctl disable systemd-time-wait-sync.service
+rm -f /usr/lib/sysctl.d/50-pid-max.conf
+
+#enable ntp
+timedatectl set-ntp true
+
+
 showinfo "enable network manager.."
 systemctl enable NetworkManager
 err_check "enable network manager failed."
@@ -115,12 +125,33 @@ showinfo "enable smartd manager.."
 systemctl enable smartd
 err_check "enable sshd failed"
 
+#create man
 showinfo "creating users..."
-useradd man
-useradd systemd-network
-useradd systemd-resolve
-groupadd kvm
-groupadd input
+groupadd -g 900 man &&
+	useradd -c 'man pages' -d /dev/null -g man \
+	-s /bin/false -u 900 man
+err_check "Create man:man failed."
+
+groupadd -g 901 systemd-network &&
+	useradd -c 'systemd-network' -d /dev/null -g systemd-network \
+	-s /bin/false -u 901 systemd-network
+err_check "Create systemd-network:systemd-network failed."
+
+groupadd -g 902 systemd-resolve &&
+	useradd -c 'systemd-resolve' -d /dev/null -g systemd-resolve \
+	-s /bin/false -u 902 systemd-resolve
+err_check "Create systemd-resolve:systemd-resolve failed."
+
+
+groupadd -g 903 systemd-timesync &&
+	useradd -c 'systemd-timesync' -d /dev/null -g systemd-timesync \
+	-s /bin/false -u 903 systemd-timesync
+err_check "Create systemd-timesync:systemd-timesync failed."
+
+groupadd -g 980 kvm
+groupadd -g 981 input
+
+
 showinfo "making certs..."
 make-ca -g
 showinfo "certs done"

@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="linux-headers-3.10.32 linux-kernel-3.10.32"
+RDEPEND="linux-headers linux-kernel"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -51,7 +51,7 @@ xgb_config()
 	cd ../build
 	err_check "[Error] glibc: create build directory failed."
 
-	XGB_CONFIG+=" --enable-kernel=3.10.32 --libexecdir=/usr/lib --disable-multi-arch --enable-obsolete-rpc "
+	XGB_CONFIG+=" --enable-kernel=4.18.5 --libexecdir=/usr/lib --enable-obsolete-rpc --with-fp --enable-cet "
 
 	../$N-$V$R/configure $XGB_CONFIG
 
@@ -140,7 +140,7 @@ xgb_install()
 	cp -v zone.tab iso3166.tab $ZONEINFO
 	err_check "cp zone tab failed."
 
-	cp -v --remove-destination $XGPATH_DEST/usr/share/zoneinfo/Asia/Shanghai \
+	ln -sfv /usr/share/zoneinfo/Asia/Shanghai \
 		$XGPATH_DEST/etc/localtime
 	err_check "glibc: config time zone failed."
 	popd

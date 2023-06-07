@@ -154,7 +154,6 @@ vte
 sakura
 wlroots
 swaybg
-json-c
 sway
 libexif
 libdvdread
@@ -208,6 +207,9 @@ fmt
 cldr-emoji-annotation
 xcb-imdkit
 qt5
+xkbcomp
+xorg-server
+xeyes
 fcitx
 libime
 fcitx5-gtk
@@ -229,7 +231,6 @@ glib-networking
 libbytesize
 libassuan
 gpgme
-cryptsetup
 volume_key
 libyaml
 libblockdev
