@@ -1,0 +1,148 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="systemd is a system and service manager for Linux"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://freedesktop.org/wiki/Software/systemd"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/systemd/systemd/archive/v$V/systemd-$V.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="linux-pam"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "enter directory failed."
+
+	#Remove several inappropriate uses of the pure attribute that cause runtime issues when the package 
+	#is built with gcc-13 or later: 
+	sed '/bus_message_type_from_string/s/_pure_//' \
+		-i src/libsystemd/sd-bus/bus-internal.h    &&
+		sed '/devt_hash_func/s/_pure_//'               \
+		-i src/basic/hash-funcs.h                  &&
+		sed '/job_get_timeout/s/_pure_//'              \
+		-i src/core/job.h
+
+
+	#tar -xf $XGPATH_SOURCE/systemd-man-pages-239.tar.xz
+	#err_check "inst man failed"
+
+	sed -i -e 's/GROUP="render"/GROUP="video"/' \
+       -e 's/GROUP="sgx", //' rules.d/50-udev-default.rules.in
+	err_check "patch 2 failed."
+
+	mkdir -p build
+	cd       build
+
+
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --buildtype=release     \
+      -Ddefault-dnssec=no     \
+      -Dfirstboot=false       \
+      -Dinstall-tests=false   \
+      -Dldconfig=false        \
+      -Dman=auto              \
+      -Dsysusers=false        \
+      -Drpmmacrosdir=no       \
+      -Dhomed=false           \
+      -Duserdb=false          \
+      -Dmode=release          \
+      -Dpam=true              \
+      -Dpamconfdir=/etc/pam.d \
+      -Ddev-kvm-mode=0660 "
+
+	#Third, call configure with $XGB_CONFIG
+	LANG=en_US.UTF-8 meson setup $XGB_CONFIG -Dntp-servers="0.asia.pool.ntp.org 0.oceania.pool.ntp.org 0.europe.pool.ntp.org 0.north-america.pool.ntp.org" .. 
+	err_check "config failed."
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	LANG=en_US.UTF-8 ninja
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+	echo "done"
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	LANG=en_US.UTF-8 DESTDIR=$XGPATH_DEST ninja install
+	err_check "install failed."
+
+	cat > $XGPATH_DEST/lib/systemd/systemd-user-sessions << "EOF"
+#!/bin/bash
+rm -f /run/nologin
+EOF
+	chmod 755 $XGPATH_DEST/lib/systemd/systemd-user-sessions
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	systemd-machine-id-setup
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

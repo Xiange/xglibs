@@ -1,10 +1,8 @@
-gobject-introspection
 libpciaccess
 libdrm
 wayland
 wayland-protocols
 libjpeg-turbo
-libpng
 giflib
 libtiff
 libwebp
@@ -32,9 +30,6 @@ xkeyboard-config
 freeglut
 pixman
 mtdev
-freetype
-graphite2
-harfbuzz
 fribidi
 fontconfig
 util-macros
@@ -236,7 +231,6 @@ libyaml
 libblockdev
 udisks
 leafpad
-libtirpc
 lmdb
 parse-yapp
 samba

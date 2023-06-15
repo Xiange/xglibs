@@ -13,7 +13,8 @@ HOMEPAGE="http://foo.bar.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://sourceforge.net/projects/aoo-extensions/files/17102/57/dict-en-20200801.oxt"
+SRC_URI="https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_US.aff \
+	https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_US.dic"
 
 
 
@@ -52,6 +53,7 @@ xgb_config()
 	cd build
 	err_check "enter directory failed."
 
+
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
@@ -80,11 +82,11 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
-	err_check "uncompress failed."
+	#unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+	#err_check "uncompress failed."
 
 	#install everything to $XGPATH_DEST
 	mkdir -p $XGPATH_DEST/usr/share/hunspell
-	cp -r * $XGPATH_DEST/usr/share/hunspell
+	cp $XGPATH_SOURCE/* $XGPATH_DEST/usr/share/hunspell
 }
 

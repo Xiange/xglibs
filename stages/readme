@@ -1,15 +1,28 @@
 
 how to update xiange system:
 
+there's tow way to make Xiange building environment:
+
+Method 1: use stage 0 tarbal.
+1. download stage 0 tarball form BaiduNetDisk, or SourceForge.
+2. tar xaf to a local directory, such as /root/xg_stage0_2023.6
+3. chroot to stage0.
+4. change tmpfs size in chroot environment: it's important for compiling new packages.  
+	mount /tmp -o remount,size=32G
+
+	then goto step 6 in Method 2.
+	
+
+
+Method 2: use binary copiled packages:
 
 1. check compiled packages of current version:
 
 	gpkg ckstage 0 /var/xiange/packages
-	gpkg ckstage 1 /var/xiange/packages
 
-	make sure all packages in stage0/stage1 was compiled.
+	make sure all packages in stage0 was compiled. (NOTE: stage0 is enough for compile stage1)
 
-	check and install stage1 because some stage1 packages is needed when compile stage0 stages.
+	check and install stage1 because some stage1 packages is needed when compile stage0 stages. (move stage1 packages to stage0)
 
 
 2. prepare a root directory, such as /root/xiange-2022.2
@@ -26,37 +39,40 @@ how to update xiange system:
 	mkdir /mnt/bak/sources-2022.2
 	mount --bind /var/xiange/sources $XGROOT/var/xiange/sources
 
-	copy baselayout to new source directory:
-
-	cp -l -r /mnt/bak/sources-2020/baselayout-2020.11 /mnt/bak/sources-2022.2
-
-	-l means hard link.
-
 
 4. install stage0 of current version to root directory:
 
 	gpkg inststage 0 /var/xiange/packages
-	gpkg inststage 1 /var/xiange/packages
+
+
+5. prepare username/group
+
+	NOTE: use /etc/samples/group.saple and /etc/samples/passwd.sample
+
+	install -m 0660 $XGROOT/etc/samples/group.sample $XGROOT/etc/group
+	install -m 0660 $XGROOT/etc/samples/passwd.sample $XGROOT/etc/passwd
 
 5. chroot to new root
 	
-	gpkg chroot $XGROOT
+	gpkg -chroot $XGROOT
 
 	. /etc/profile
+	
+	pwconv
+	grpconv
 
-6. create user gpkg and group gpkg
+6. test user gpkg:
 
-	groupadd -g 35 gpkg
-	useradd -g 35 -u 35 gpkg
-
-	and then check su:
-
+	su
 	su -p gpkg -c "whoami"
+	it should say "gpkg". (run su first if it return 1).
 
 7. change compile parameters:
 
 
 	REMOVE native if you want build a common release:
+
+	-march=x86-64
 
 	gpkg -info > /etc/xgparas
 	vi $XGROOT//etc/xgparas
@@ -74,7 +90,7 @@ how to update xiange system:
 
 	use cp -l -r to hard link copy exists source files. 
 
-9. update stage 0 one by one with newest version:
+10. update stage 0 one by one with newest version:
 
 
 how to install xiange:
@@ -82,14 +98,14 @@ how to install xiange:
 
 1. update software via gpkg edit 
 2. compile to package, with gpkg -ip
-3. check if all softwares is ready to install for target stage with gpkg ckstage
+3. check if all softwares is ready to install for target stage with gpkg ckstage (in /var/xiange/packges)
 4. install image with mkxgimg.sh
 
 	mkxgimg.sh -s 0,1,2,3
 		a) create a 8GB image at /root/xg64.img
 		b) format with ext4
 		c) install grub2
-		d) install all softwares for specified stage
+		d) install all softwares for specified stage, in /var/xiange/packages
 		e1) update grub config in stage1
 		e2) enable network manager in stage 1
 		e3) enable sshd in stage 1

@@ -6,7 +6,7 @@
 DESCRIPTION="Parallel BZIP2"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/ruanhuabin/pbzip2"
+HOMEPAGE="https://launchpad.net/pbzip2"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,8 @@ HOMEPAGE="https://github.com/ruanhuabin/pbzip2"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/ruanhuabin/pbzip2/archive/master.zip"
+SRC_URI="https://launchpad.net/pbzip2/1.1/$V/+download/pbzip2-$V.tar.gz"
+
 
 
 # Binary package URI.
@@ -40,7 +41,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -49,7 +50,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-master
+	cd $N-$V
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
@@ -84,7 +85,7 @@ xgb_install()
 	#make DESTDIR=$XGPATH_DEST install
 	mkdir -p $XGPATH_DEST/usr/bin
 	err_check "create bin failed"
-	cp pbz2 $XGPATH_DEST/usr/bin/
+	cp pbzip2 $XGPATH_DEST/usr/bin/
 }
 
 #post install

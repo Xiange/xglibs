@@ -1,0 +1,139 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Firmwares required by Linux kernel"
+
+HOMEPAGE="http://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+UBFWVER="20230323.gitbcdcfbcf"
+
+SRC_URI="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-$V.tar.gz \
+http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_20230323.gitbcdcfbcf.orig.tar.xz \
+http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_20230323.gitbcdcfbcf-0ubuntu1.1.debian.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	mkdir unzip
+	cd unzip
+	tar xf $XGPATH_SOURCE/linux-firmware-$V.tar.gz
+	err_check "tar 1 failed"
+	tar xf $XGPATH_SOURCE/linux-firmware_$UBFWVER.orig.tar.xz
+	err_check "tar 2 failed"
+
+	mkdir debian
+	err_check "make debian  failed"
+	tar xf $XGPATH_SOURCE/linux-firmware_$UBFWVER-0ubuntu1.1.debian.tar.xz -C debian
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	#./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	#make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+
+	mkdir -p $XGPATH_DEST/ub
+	mkdir -p $XGPATH_DEST/linux
+
+	#ubuntu
+	cd linux-firmware-$UBFWVER
+	err_check "cd ubuntu failed"
+	make DESTDIR=$XGPATH_DEST/ub install
+	err_check "install 1 failed"
+
+	#stanadard
+	cd ../linux-firmware-$V
+	err_check "cd linux-firmware failed"
+	make DESTDIR=$XGPATH_DEST/linux install
+	err_check "install 2 failed"
+
+	#debian
+	cd ../debian
+	err_check "cd debian  failed"
+	cp -r * $XGPATH_DEST/ub/lib/firmware 
+	err_check "cp debian  failed"
+
+	cp -r $XGPATH_DEST/ub/*  $XGPATH_DEST/
+	err_check "cp 1 failed"
+	cp -r $XGPATH_DEST/linux/*  $XGPATH_DEST/
+	err_check "cp 2 failed"
+
+	rm -rf $XGPATH_DEST/ub
+	err_check "rm 1 failed"
+	rm -rf $XGPATH_DEST/linux
+	err_check "rm 2 failed"
+
+	#create amd-ucode.bin
+	mkdir -p kernel/x86/microcode
+	err_check "create microcode failed"
+
+	cat $XGPATH_DEST/lib/firmware/amd-ucode/microcode_amd*.bin > kernel/x86/microcode/AuthenticAMD.bin
+	err_check "create AMD.bin failed"
+
+	mkdir $XGPATH_DEST/boot
+	err_check "create boot failed"
+
+	echo kernel/x86/microcode/AuthenticAMD.bin |
+    	bsdtar --uid 0 --gid 0 -cnf - -T - |
+    	bsdtar --null -cf - --format=newc @- > $XGPATH_DEST/boot/amd-ucode.img
+}
+
