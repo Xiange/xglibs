@@ -49,7 +49,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd androwish-6e2085e6e4/undroid
+	cd androwish-c48f047f5b/undroid
 	err_check "enter directory failed."
 
 
@@ -57,7 +57,7 @@ xgb_config()
 	err_check "script init failed"
 
 
-	cd sdl2tk/sdl
+	cd sdl2tk/unix
 	err_check "enter sdltk failed"
 
 	#second, add package specified config params to XGB_CONFIG
@@ -95,7 +95,7 @@ xgb_install()
 	err_check "install failed"
 
 	#create wish
-	cp -l $XGPATH_DEST/usr/bin/sdl2wish8.6 $XGPATH_DEST/usr/bin/wish
+	cp -l $XGPATH_DEST/usr/bin/wish8.6 $XGPATH_DEST/usr/bin/wish
 	err_check "cp wish failed"
 
 	rm  $XGPATH_DEST/usr/include/X11/X*.h

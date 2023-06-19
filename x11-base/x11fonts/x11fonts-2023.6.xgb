@@ -14,7 +14,7 @@ HOMEPAGE="http://www.x.org/wiki/"
 # $V = package version, such as 2.6.10
 
 SRCURL="https://www.x.org/pub/individual/font"
-Xproto="encodings-1.0.5.tar.xz \
+Xproto="encodings-1.0.7.tar.xz \
 font-adobe-100dpi-1.0.4.tar.xz \
 font-adobe-75dpi-1.0.4.tar.xz \
 font-adobe-utopia-100dpi-1.0.5.tar.xz \
@@ -104,7 +104,7 @@ xgb_config()
 
 	for i in $Xproto
 	do
-		name=${i%.tar.bz2}
+		name=${i%.tar.xz}
 		pushd $name
 
 		echo ""
@@ -127,7 +127,7 @@ xgb_build()
 
 	for i in $Xproto
 	do
-		name=${i%.tar.bz2}
+		name=${i%.tar.xz}
 		pushd $name
 		make $XGPARA_MAKE
 		err_check "make $name failed."
@@ -145,7 +145,7 @@ xgb_install()
 
 	for i in $Xproto
 	do
-		name=${i%.tar.bz2}
+		name=${i%.tar.xz}
 		pushd $name
 		make DESTDIR=$XGPATH_DEST install
 		err_check "install $name failed."

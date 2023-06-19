@@ -118,6 +118,7 @@ grub-efi
 aalib
 boost
 libical
+sbc
 bluez
 calc
 gdb

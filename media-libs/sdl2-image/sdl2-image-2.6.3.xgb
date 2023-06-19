@@ -3,10 +3,11 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Vulkan Tools and Utilities"
+DESCRIPTION="an image file loading library."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/KhronosGroup/Vulkan-Tools"
+HOMEPAGE="https://github.com/libsdl-org/SDL_image"
+
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +15,7 @@ HOMEPAGE="https://github.com/KhronosGroup/Vulkan-Tools"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/KhronosGroup/Vulkan-Tools/archive/master.zip"
+SRC_URI="https://github.com/libsdl-org/SDL_image/releases/download/release-$V/SDL2_image-$V.tar.gz"
 
 
 # Binary package URI.
@@ -40,7 +41,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/SDL2_image-$V.tar.gz
 }
 
 #config
@@ -49,38 +50,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd Vulkan-Tools-master
+	cd SDL2_image-$V$R
 	err_check "enter directory failed."
 
-
-	patch -p1 < $XGPATH_SCRIPT/sway.diff
-	err_check "patch 1 failed"
-
-	#patch
-	cd cube
-	patch -p1 < $XGPATH_SCRIPT/cube.diff
-	err_check "patch 2 failed"
-	cd ..
-
-
-	mkdir build
-	cd build
-	err_check "enter build failed."
-
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_INSTALL_SYSCONFDIR=/etc \
-		-DCMAKE_SKIP_RPATH=True \
-		-DBUILD_WSI_XCB_SUPPORT=OFF \
-		-DBUILD_WSI_XLIB_SUPPORT=OFF \
-		-DBUILD_WSI_WAYLAND_SUPPORT=On \
-		-DBUILD_CUBE=ON \
-		-DBUILD_VULKANINFO=ON \
-		-DBUILD_ICD=OFF \
-		 -DCMAKE_BUILD_TYPE=Release"
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	cmake $XGB_CONFIG ..
+	./configure $XGB_CONFIG
 }
 
 #build

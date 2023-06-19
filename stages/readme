@@ -1,6 +1,13 @@
 
 how to update xiange system:
 
+first of all, you should use a disk image for easy simulation.
+1. create image file
+2. create patitions
+3. format with ext4
+4. losetup and mount
+	losetup -P -f filename
+
 there's tow way to make Xiange building environment:
 
 Method 1: use stage 0 tarbal.
