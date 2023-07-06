@@ -83,9 +83,8 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	#make DESTDIR=$XGPATH_DEST RAISE_SETFCAP=no install
-	make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST prefix=/usr install
 	err_check "install failed"
-	
 }
 
 #post install

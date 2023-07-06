@@ -63,6 +63,10 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
+	#patch
+	patch -p1 < $XGPATH_SOURCE/cmpile.patch
+	err_check "patch 1 failed"
+
 	#run make in current directory
 	make $XGPARA_MAKE
 }

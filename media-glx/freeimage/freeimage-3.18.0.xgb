@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libraw openexr"
 
 # Build time depend
 DEPEND="${RDEPEND}"

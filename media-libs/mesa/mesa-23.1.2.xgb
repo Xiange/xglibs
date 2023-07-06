@@ -65,7 +65,9 @@ xgb_config()
 		--buildtype=release \
 		-Degl-native-platform=wayland  \
 		-Ddri3=enabled \
-		-Dgallium-drivers=auto \
+		-Dgallium-drivers=radeonsi,r300,r600,nouveau,swrast,i915,virgl,svga,iris,crocus,zink \
+		-Dgallium-va=enabled \
+		-Dvulkan-drivers=amd,intel,intel_hasvk,swrast,virtio-experimental \
 		-Dvalgrind=disabled \
 		-Dlibunwind=disabled "
 

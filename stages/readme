@@ -2,15 +2,15 @@
 how to update xiange system:
 
 first of all, you should use a disk image for easy simulation.
-1. create image file
-2. create patitions
-3. format with ext4
-4. losetup and mount
-	losetup -P -f filename
+1. create image file (/root/xg64.img)
+2. create patitions (losetup, cfdisk)
+3. format with ext4 (mkfs.ext4)
+4. exit losetup and re-mount, you can use mount.sh
+	./mount.sh
 
 there's tow way to make Xiange building environment:
 
-Method 1: use stage 0 tarbal.
+Method 1: use stage 0 tarbal. (or stage1/2, if you have any of them)
 1. download stage 0 tarball form BaiduNetDisk, or SourceForge.
 2. tar xaf to a local directory, such as /root/xg_stage0_2023.6
 3. chroot to stage0.
@@ -206,5 +206,7 @@ roll back:
 
 	1. update /etc/xgpara with native?
 	2. roll back /var/xiange/xglibs
+
+simulation:
 
 

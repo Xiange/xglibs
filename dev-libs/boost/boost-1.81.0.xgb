@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="icu python"
+RDEPEND="icu python3"
 
 # Build time depend
 DEPEND="${RDEPEND}"

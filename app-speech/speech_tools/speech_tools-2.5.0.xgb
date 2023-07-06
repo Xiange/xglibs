@@ -50,6 +50,8 @@ xgb_config()
 	#enable shared 
 	sed -i "s/^#SHARED/SHARED/g" config/config
 	err_check "enable shared failed"
+
+	patch -p1 < $XGPATH_SOURCE/1.patch
 }
 
 #build

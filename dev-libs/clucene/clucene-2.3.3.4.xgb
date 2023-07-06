@@ -14,8 +14,8 @@ HOMEPAGE="http://clucene.sourceforge.net/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/clucene/clucene-core-$V.tar.gz \
-http://www.linuxfromscratch.org/patches/blfs/7.5/clucene-2.3.3.4-contribs_lib-1.patch"
+SRC_URI="https://downloads.sourceforge.net/clucene/clucene-core-$V.tar.gz \
+https://www.linuxfromscratch.org/patches/blfs/svn/clucene-2.3.3.4-contribs_lib-1.patch"
 
 
 # Binary package URI.
@@ -55,6 +55,9 @@ xgb_config()
 
 	patch -Np1 -i $XGPATH_SOURCE/clucene-2.3.3.4-contribs_lib-1.patch
 	err_check "patch failed."
+
+	sed -i '/Misc.h/a #include <ctime>' src/core/CLucene/document/DateTools.cpp
+	err_check "patch 2 failed."
 
 	mkdir build
 	cd build

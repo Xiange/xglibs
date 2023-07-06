@@ -58,8 +58,8 @@ xgb_config()
 	err_check "enter build failed."
 
 	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTS=OFF  \
-		-DBUILD_WSI_XCB_SUPPORT=OFF \
-		-DBUILD_WSI_XLIB_SUPPORT=OFF " 
+		-DBUILD_WSI_XCB_SUPPORT=ON \
+		-DBUILD_WSI_XLIB_SUPPORT=ON " 
 
 
 	#Third, call configure with $XGB_CONFIG

@@ -12,7 +12,8 @@ HOMEPAGE="http://foo.bar.com/"
 # gpkg.  # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/$V/$N-$V.tar.xz"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/$V/$N-$V.tar.xz \
+	https://www.linuxfromscratch.org/patches/blfs/svn/polkit-gnome-0.105-consolidated_fixes-1.patch"
 
 
 # Binary package URI.
@@ -49,6 +50,10 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 	err_check "enter directory failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/polkit-gnome-0.105-consolidated_fixes-1.patch
+	err_check "patch 1 failed"
+
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "

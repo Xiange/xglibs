@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="at-spi2-atk gdk-pixbuf pango libepoxy"
+RDEPEND="at-spi2-core gdk-pixbuf pango libepoxy"
 
 # Build time depend
 DEPEND="${RDEPEND}"

@@ -19,7 +19,7 @@ index 8d5a130..17bca04 100644
  ETAGS = etags
  CTAGS = ctags
 -DIST_SUBDIRS = src bindings example docs tests
-+DIST_SUBDIRS = src  example docs tests
++DIST_SUBDIRS = src  example tests
  DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
  distdir = $(PACKAGE)-$(VERSION)
  top_distdir = $(distdir)
@@ -28,7 +28,7 @@ index 8d5a130..17bca04 100644
  top_srcdir = @top_srcdir@
  ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 -SUBDIRS = src bindings example docs $(am__append_1)
-+SUBDIRS = src  example docs $(am__append_1)
++SUBDIRS = src  example $(am__append_1)
  EXTRA_DIST = \
  	m4/introspection.m4 \
  	gtk-doc.make \

@@ -53,7 +53,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#patch: remove pygtk, pythong bindings
-	patch -p1 < $XGPATH_SCRIPT/pygtk.diff
+	patch -p1 < $XGPATH_SOURCE/1.patch
 	err_check "patch failed"
 
 	autoreconf -fiv

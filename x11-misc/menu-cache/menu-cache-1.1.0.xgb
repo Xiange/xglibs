@@ -23,7 +23,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libfm-extra"
 
 # Build time depend
 DEPEND="${RDEPEND}"

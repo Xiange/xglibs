@@ -13,7 +13,8 @@ HOMEPAGE="http://foo.bar.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://github.com/docbook/xslt10-stylesheets/releases/download/release/$V/docbook-xsl-nons-$V.tar.bz2"
+SRC_URI="https://github.com/docbook/xslt10-stylesheets/releases/download/release/$V/docbook-xsl-nons-$V.tar.bz2 \
+	 https://www.linuxfromscratch.org/patches/blfs/svn/docbook-xsl-nons-1.79.2-stack_fix-1.patch"
 
 
 # Binary package URI.
@@ -50,6 +51,9 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-nons-$V$R
 	err_check "enter directory failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/docbook-xsl-nons-1.79.2-stack_fix-1.patch
+	err_check "patch failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
