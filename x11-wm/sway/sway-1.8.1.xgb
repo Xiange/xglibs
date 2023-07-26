@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/swaywm/sway"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/swaywm/sway/archive/refs/tags/$V.zip"
+SRC_URI="https://github.com/swaywm/sway/archive/refs/heads/master.zip"
 
 
 # Binary package URI.
@@ -49,12 +49,12 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V
+	cd $N-master
 	err_check "enter directory failed."
 
 	#fixed compile error
-	patch -p1 < $XGPATH_SOURCE/cmp.patch
-	err_check "patch failed"
+	#patch -p1 < $XGPATH_SOURCE/cmp.patch
+	#err_check "patch failed"
 
 	mkdir build
 	cd build

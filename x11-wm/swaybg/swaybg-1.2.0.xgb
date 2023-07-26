@@ -51,6 +51,10 @@ xgb_config()
 	cd $N-$V
 	err_check "enter directory failed."
 
+	#add dir support
+	patch -p1 < $XGPATH_SOURCE/dir.patch
+	err_check "patch failed"
+
 	mkdir build
 	cd build
 	err_check "enter build failed."

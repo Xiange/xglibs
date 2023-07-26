@@ -66,7 +66,8 @@ xgb_config()
 
 	#Third, call configure with $XGB_CONFIG
 
-	XGB_CONFIG=" -DCMAKE_BUILD_TYPE=None -DCMAKE_INSTALL_PREFIX=/usr  -DUSE_PORTAUDIO=OFF -DUSE_SLANG=OFF -Wno-dev "
+	XGB_CONFIG=" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_DATAROOTDIR=share -DUSE_PORTAUDIO=OFF -DUSE_SLANG=OFF -DUSE_OSS=OFF "
 	cmake $XGB_CONFIG ..	 
 	err_check "config 2 failed."
 
@@ -78,7 +79,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 
 }
 

@@ -7,6 +7,8 @@ docbook-xsl
 docbook-xml
 libxslt
 glib2
+gobject-introspection
+vala
 libgpg-error
 libssh2
 curl
@@ -109,7 +111,6 @@ nasm
 mandoc
 efivar
 efibootmgr
-gobject-introspection
 libpng
 freetype
 graphite2
@@ -132,3 +133,8 @@ iucode-tool
 intel-ucode
 firmware-b43
 mtools
+bridge-utils
+libcap-ng
+pkcs11-helper
+openvpn
+linux-tools

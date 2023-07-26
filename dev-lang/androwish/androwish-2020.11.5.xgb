@@ -53,8 +53,13 @@ xgb_config()
 	err_check "enter directory failed."
 
 
+
 	./build-undroidwish-wayland.sh init
 	err_check "script init failed"
+
+	#remove compile bug
+	#patch -p1 -i $XGPATH_SOURCE/1.patch
+	#err_check "patch failed"
 
 
 	cd sdl2tk/unix
@@ -65,6 +70,7 @@ xgb_config()
 		XGB_CONFIG+=" --enable-64bit " 
 	fi
 
+	XGB_CONFIG+=" --enable-shared " 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
 }
@@ -95,6 +101,7 @@ xgb_install()
 	err_check "install failed"
 
 	#create wish
+	#cp -l $XGPATH_DEST/usr/bin/sdl2wish8.6 $XGPATH_DEST/usr/bin/wish
 	cp -l $XGPATH_DEST/usr/bin/wish8.6 $XGPATH_DEST/usr/bin/wish
 	err_check "cp wish failed"
 

@@ -24,7 +24,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="freeimage"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -63,14 +63,14 @@ xgb_config()
 	err_check "enter build failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Dwindows=wayland -Dfreeimage=disabled -Dlibtiff=enabled -Dlibpng=enabled \
+	XGB_CONFIG+=" -Dwindows=wayland -Dfreeimage=enabled -Dlibtiff=enabled -Dlibpng=enabled \
 		-Dlibjpeg=enabled -Dlibrsvg=enabled -Dlibheif=enabled  -Dtest=disabled \
 		-Dcontrib-commands=false -Dman=disabled \
 		-Dlibnsgif=disabled "
 
 	#Third, call configure with $XGB_CONFIG
 	echo "run meson.."
-	meson $XGB_CONFIG ..
+	meson setup $XGB_CONFIG ..
 }
 
 #build

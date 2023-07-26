@@ -72,6 +72,7 @@ xcb-util-cursor
 glslang
 vulkan-headers
 vulkan-loader
+vulkan-tools
 mesa
 glmark2
 freeglut
@@ -155,6 +156,9 @@ vte
 imagemagick
 sakura
 hwdata
+display-info
+xkbcomp
+xwayland
 wlroots
 swaybg
 sway
@@ -252,6 +256,10 @@ pcmanfm
 mpv
 libde265
 libheif
+imath
+openexr
+jxrlib
+freeimage
 imv
 lavalauncher
 libburn
@@ -314,4 +322,8 @@ libmypaint
 mypaint-brushes-1.3.0
 appstream-glib
 gimp
+wofi
+baobab
+wf-recorder
+xeyes
 theme-xiange

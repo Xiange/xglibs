@@ -16,6 +16,15 @@ oldroot=$mntroot/2
 newroot=$mntroot/1
 squash_arch=x86_64
 declare loopd
+nocheck=0
+diskfile=""
+
+if [ "$1" == "-nocheck" ]; then
+	echo "No check sqush time.."
+	nocheck=1
+else 
+	diskfile=$1
+fi
 
 
 
@@ -161,29 +170,26 @@ xg_do_kernel()
 	XGLIST="$oldroot/lib/libdevmapper.so.*
 		$oldroot/lib/libc.so.*
 		$oldroot/lib/libm.so.*
-		$oldroot/lib/libc-*.so 
-		$oldroot/lib/libm-*.so 
+		$oldroot/lib/libudev.so*
 		$oldroot/lib/libpthread.so.0 
-		$oldroot/lib/libpthread-*.so 
-		$oldroot/lib/ld-*.so 
 		$oldroot/lib/ld-linux-x86-64.so.* 
 		$oldroot/lib/systemd/systemd-udevd
 		$oldroot/lib/systemd/libsystemd-shared-*.so
 		$oldroot/lib/libkmod.so*
+		$oldroot/lib/libcrypt.so*
 		$oldroot/usr/lib/libacl.so*
 		$oldroot/lib/libblkid.so*
-		$oldroot/lib/libcap.so*
+		$oldroot/usr/lib/libcap.so*
 		$oldroot/usr/lib/libgcrypt.so*
 		$oldroot/usr/lib/libidn2.so*
 		$oldroot/usr/lib/libip4tc.so*
 		$oldroot/usr/lib/liblz4.so*
-		$oldroot/usr/lib/libmount.so*
 		$oldroot/lib/libmount.so*
+		$oldroot/usr/lib/libmount.so*
 		$oldroot/usr/lib/libcrypto.so*
 		$oldroot/usr/lib/libp11-kit.so*
 		$oldroot/usr/lib/libpam.so*
 		$oldroot/lib/librt.so*
-		$oldroot/lib/librt-*.so
 		$oldroot/usr/lib/libzstd.so*
 		$oldroot/usr/lib/liblzma.so*
 		$oldroot/usr/lib/libz.so*
@@ -381,6 +387,8 @@ xg_cksquash()
 		if [ "/root/xiange-sqroot" -nt "/root/xg64.img" ]; then
 			#newer, no need recreate.
 			showinfo "xiange-sqroot is newer than xg64.img, pass"
+		elif [ "$nocheck" == "1" ]; then
+			showinfo "xiange-sqroot no check set, use old .."
 		else
 			showinfo "xiange-sqroot is older than xg64.img, recreate it"
 			rm -f "/root/xiange-sqroot"
@@ -428,7 +436,7 @@ imgfile="/root/xg_sqh.img"
 
 xg_mkddimg()
 {
-	disksize=3500000000
+	disksize=4000000000
 	blocks=$(($disksize/512))
 	
 	showinfo "create image file $imgfile, size $(($disksize/1000000000)) GB.."
@@ -551,7 +559,7 @@ xg_ckddimg()
 devname="/dev/loop1p3"
 
 xg_prepare
-xg_ckddimg "$1"
+xg_ckddimg "$diskfile"
 xg_cksquash
 xg_mount_squash
 

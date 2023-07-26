@@ -158,6 +158,7 @@ showinfo "certs done"
 
 systemctl enable update-pciids.timer
 systemctl enable update-usbids.timer
+systemctl enable cpupower
 
 
 showOK "all done. ready for stage2"

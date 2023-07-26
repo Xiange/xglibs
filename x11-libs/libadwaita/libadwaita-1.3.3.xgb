@@ -53,7 +53,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --buildtype=release -Dvapi=false -Dtests=false "
+	XGB_CONFIG+=" --buildtype=release  -Dtests=false "
 
 	mkdir build && cd build
 	err_check "enter build failed."

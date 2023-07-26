@@ -25,9 +25,9 @@ xg_do_cleanup()
 
 
 imgfile="/root/xg64.img"
-finalstage="X"
+finalstage="2"
 showusage=0
-disksize=10000000000
+disksize=12000000000
 version=1.0
 
 while getopts "g:s:v" name  2>/dev/null

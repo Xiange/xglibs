@@ -1,0 +1,137 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="An easy-to-use, robust and highly configurable VPN (Virtual Private Network)"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="https://openvpn.net/index.php/open-source.html"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/OpenVPN/openvpn/archive/refs/tags/v$V.tar.gz \
+	https://gitlab.archlinux.org/archlinux/packaging/packages/openvpn/-/raw/main/0001-unprivileged.patch \
+	https://gitlab.archlinux.org/archlinux/packaging/packages/openvpn/-/raw/main/sysusers.conf \
+	https://gitlab.archlinux.org/archlinux/packaging/packages/openvpn/-/raw/main/tmpfiles.conf"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="libcap-ng pkcs11-helper"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/v$V.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "enter directory failed."
+
+	# https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg19302.html
+  	sed -i '/^CONFIGURE_DEFINES=/s/set/env/g' configure.ac
+	err_check "sed failed"
+
+	patch -Np1 < $XGPATH_SOURCE/0001-unprivileged.patch
+	err_check "patch failed"
+
+	autoreconf --force --install
+	err_check "autoreconf failed"
+
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sbindir=/usr/bin \
+    --enable-pkcs11 \
+    --enable-plugins \
+    --enable-systemd \
+    --enable-x509-alt-username "
+
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	cp doc/openvpn-examples.5.rst doc/openvpn-examples.5
+	cp doc/openvpn.8.rst doc/openvpn.8
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed"
+
+	install -D -m0644 $XGPATH_SOURCE/sysusers.conf "${XGPATH_DEST}"/usr/lib/sysusers.d/openvpn.conf
+	err_check "install user.conf failed"
+
+  	install -D -m0644 $XGPATH_SOURCE/tmpfiles.conf "${XGPATH_DEST}"/usr/lib/tmpfiles.d/openvpn.conf
+	err_check "install tmpfiles.conf failed"
+
+	install -d -m0755 "${XGPATH_DEST}"/usr/share/openvpn
+	err_check "install sample dir failed"
+  	cp -r sample/sample-config-files "${XGPATH_DEST}"/usr/share/openvpn/examples
+	err_check "install sample failed"
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

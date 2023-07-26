@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/swaywm/wlroots"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://gitlab.freedesktop.org/wlroots/wlroots/-/archive/$V/wlroots-$V.zip"
+SRC_URI="https://gitlab.freedesktop.org/wlroots/wlroots/-/archive/master/wlroots-master.zip"
 
 
 # Binary package URI.
@@ -48,14 +48,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V
+	cd $N-master
 	err_check "enter directory failed."
 
 	mkdir build
 	cd build
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Dxwayland=disabled -Dexamples=false -Drenderers=vulkan,gles2 -Dbackends=drm,libinput "
+	XGB_CONFIG+=" -Dxwayland=enabled -Dexamples=false -Drenderers=vulkan,gles2 -Dbackends=drm,libinput "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

@@ -14,7 +14,7 @@ HOMEPAGE="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/NSS_3_90_RTM/src/nss-$V.tar.gz \
+SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/NSS_3_91_RTM/src/nss-$V.tar.gz \
 	http://www.linuxfromscratch.org/patches/blfs/svn/nss-$V-standalone-1.patch "
 
 
