@@ -115,7 +115,9 @@ libpng
 freetype
 graphite2
 harfbuzz
+grub
 grub-efi
+fallout-grub-theme
 aalib
 boost
 libical

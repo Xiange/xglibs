@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="API and commands for processing SPIR-V modules"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="https://www.khronos.org/vulkan/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/v$V.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd SPIRV-Tools-$V$R
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG="   -Bbuild \       
+		-GNinja \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_BUILD_TYPE=None \
+		-DSPIRV_WERROR=Off \
+		-DBUILD_SHARED_LIBS=ON \
+		-DSPIRV_TOOLS_BUILD_STATIC=OFF \
+		-DSPIRV-Headers_SOURCE_DIR=/usr "
+
+	#Third, call configure with $XGB_CONFIG
+	cmake $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	cd build
+
+	#run make in current directory
+	ninja
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+	cd build
+
+	#install everything to $XGPATH_DEST
+	DESTDIR=$XGPATH_DEST ninja install
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

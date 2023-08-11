@@ -62,7 +62,6 @@ gettext
 gperf
 texinfo
 groff
-grub
 less
 gzip
 pigz
