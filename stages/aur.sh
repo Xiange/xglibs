@@ -6,6 +6,8 @@
 #aur_path_base=/var/xiange/aur
 aur_path_base=/tmp/aur
 aur_path_script=/var/xiange/aur
+aur_path_sources=/var/xiange/sources
+aur_path_packages=/var/xiange/packages
 
 next_op=0
 
@@ -153,7 +155,20 @@ do_search()
 #install packages
 do_install()
 {
-	echo "in sync AUR PKGBUILD database.."
+	showinfo "syncing scripts with server.."
+	do_download_script "$1"
+
+	cd $aur_path_base/$1
+	err_check "enter $aur_path_base/$1 failed"
+
+	#make source tarbar to aur_path_sources
+
+	makepkg SRCPKGDEST=$aur_path_sources  --allsource -d
+	err_check "make source tarball failed"
+
+	#build tarball
+	makepkg PKGDEST=$aur_path_packages -d
+	err_check "build tarball failed"
 }
 
 #$1 is package name
